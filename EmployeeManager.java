@@ -8,6 +8,7 @@ public class EmployeeManager {
         // Check arguments
 if (args[0].equals("l")) {
 System.out.println("Loading data ...");
+
 try {
 BufferedReader r = new BufferedReader(
 new InputStreamReader(
