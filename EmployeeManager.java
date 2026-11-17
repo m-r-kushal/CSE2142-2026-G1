@@ -40,11 +40,15 @@ public class EmployeeManager {
         } else if (args[0].contains(Constants.ARG_SEARCH)) {
             System.out.println(Constants.MSG_LOADING);
             try {
-                List<String> employees = Arrays.asList(readEmployeesFromFile().split(Constants.COMMA_DELIMITER));
-                for (int index = 0; index < employees.size(); index++) {
-                    employees.set(index, employees.get(index).trim());
+                String[] employees = readEmployeesFromFile().split(Constants.COMMA_DELIMITER);
+                int foundIndex = -1;
+                for (int index = 0; index < employees.length; index++) {
+                    if (employees[index].trim().equals(args[0].substring(1).trim())) {
+                        foundIndex = index;
+                        break;
+                    }
                 }
-                if (employees.contains(args[0].substring(1).trim())) {
+                if (foundIndex != -1) {
                     System.out.println("Employee found!");
                 } else {
                     System.out.println("Employee not found!");
@@ -55,20 +59,9 @@ public class EmployeeManager {
         } else if (args[0].contains(Constants.ARG_COUNT)) {
             System.out.println(Constants.MSG_LOADING);
             try {
-                char[] characters = readEmployeesFromFile().toCharArray();
-                boolean inWord = false;
-                int wordCount = 0;
-                for (char character : characters) {
-                    if (character == ' ') {
-                        if (!inWord) {
-                            wordCount++;
-                            inWord = true;
-                        } else {
-                            inWord = false;
-                        }
-                    }
-                }
-                System.out.println(wordCount + " word(s) found " + characters.length);
+                String line = readEmployeesFromFile();
+                String[] words = line.trim().split("\\s+");
+                System.out.println(words.length + " word(s) found " + line.length());
             } catch (Exception exception) {
             }
             System.out.println(Constants.MSG_LOADED);
@@ -89,7 +82,7 @@ public class EmployeeManager {
             System.out.println(Constants.MSG_LOADING);
             try {
                 List<String> employeeList = new ArrayList<>(Arrays.asList(readEmployeesFromFile().split(Constants.COMMA_DELIMITER)));
-                employeeList.removeIf(employee -> employee.trim().equals(args[0].substring(1).trim()));
+                employeeList.remove(args[0].substring(1).trim());
                 writeEmployeesToFile(String.join(Constants.COMMA_DELIMITER, employeeList), false);
             } catch (Exception exception) {
             }
