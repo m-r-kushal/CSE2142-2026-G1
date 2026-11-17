@@ -15,7 +15,7 @@ public class EmployeeManager {
             System.out.println(Constants.MSG_LOADING);
             try {
                 for (String employee : readEmployeesFromFile().split(Constants.COMMA_DELIMITER)) {
-                    System.out.println(employee);
+                    System.out.println(employee.trim());
                 }
             } catch (Exception exception) {
             }
@@ -26,7 +26,7 @@ public class EmployeeManager {
                 String line = readEmployeesFromFile();
                 System.out.println(line);
                 String[] employees = line.split(Constants.COMMA_DELIMITER);
-                System.out.println(employees[new Random().nextInt(employees.length)]);
+                System.out.println(employees[new Random().nextInt(employees.length)].trim());
             } catch (Exception exception) {
             }
             System.out.println(Constants.MSG_LOADED);
@@ -40,13 +40,14 @@ public class EmployeeManager {
         } else if (args[0].contains(Constants.ARG_SEARCH)) {
             System.out.println(Constants.MSG_LOADING);
             try {
-                String[] employees = readEmployeesFromFile().split(Constants.COMMA_DELIMITER);
-                boolean found = false;
-                for (int index = 0; index < employees.length && !found; index++) {
-                    if (employees[index].equals(args[0].substring(1))) {
-                        System.out.println("Employee found!");
-                        found = true;
-                    }
+                List<String> employees = Arrays.asList(readEmployeesFromFile().split(Constants.COMMA_DELIMITER));
+                for (int index = 0; index < employees.size(); index++) {
+                    employees.set(index, employees.get(index).trim());
+                }
+                if (employees.contains(args[0].substring(1).trim())) {
+                    System.out.println("Employee found!");
+                } else {
+                    System.out.println("Employee not found!");
                 }
             } catch (Exception exception) {
             }
@@ -76,7 +77,7 @@ public class EmployeeManager {
             try {
                 String[] employees = readEmployeesFromFile().split(Constants.COMMA_DELIMITER);
                 for (int index = 0; index < employees.length; index++) {
-                    if (employees[index].equals(args[0].substring(1))) {
+                    if (employees[index].trim().equals(args[0].substring(1).trim())) {
                         employees[index] = Constants.STATUS_UPDATED;
                     }
                 }
@@ -88,7 +89,7 @@ public class EmployeeManager {
             System.out.println(Constants.MSG_LOADING);
             try {
                 List<String> employeeList = new ArrayList<>(Arrays.asList(readEmployeesFromFile().split(Constants.COMMA_DELIMITER)));
-                employeeList.remove(args[0].substring(1));
+                employeeList.removeIf(employee -> employee.trim().equals(args[0].substring(1).trim()));
                 writeEmployeesToFile(String.join(Constants.COMMA_DELIMITER, employeeList), false);
             } catch (Exception exception) {
             }
