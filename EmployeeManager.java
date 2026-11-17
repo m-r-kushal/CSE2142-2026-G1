@@ -30,21 +30,33 @@ public class EmployeeManager {
             } catch (Exception exception) {
             }
             System.out.println(Constants.MSG_LOADED);
-        } else if (args[0].contains(Constants.ARG_ADD)) {
+        } else if (args[0].startsWith(Constants.ARG_ADD)) {
+            if (args[0].substring(1).trim().isEmpty()) {
+                System.out.println("Error: Please provide an employee name to add (e.g., \"+John Doe\").");
+                return;
+            }
             System.out.println(Constants.MSG_LOADING);
             try {
-                writeEmployeesToFile(Constants.COMMA_SPACE_DELIMITER + args[0].substring(1), true);
+                writeEmployeesToFile(Constants.COMMA_SPACE_DELIMITER + args[0].substring(1).trim(), true);
             } catch (Exception exception) {
             }
             System.out.println(Constants.MSG_LOADED);
-        } else if (args[0].contains(Constants.ARG_SEARCH)) {
+        } else if (args[0].startsWith(Constants.ARG_SEARCH)) {
+            if (args[0].substring(1).trim().isEmpty()) {
+                System.out.println("Error: Please provide an employee name to search (e.g., \"?John Doe\").");
+                return;
+            }
             System.out.println(Constants.MSG_LOADING);
             try {
-                List<String> employees = Arrays.asList(readEmployeesFromFile().split(Constants.COMMA_DELIMITER));
-                for (int index = 0; index < employees.size(); index++) {
-                    employees.set(index, employees.get(index).trim());
+                String[] employees = readEmployeesFromFile().split(Constants.COMMA_DELIMITER);
+                int foundIndex = -1;
+                for (int index = 0; index < employees.length; index++) {
+                    if (employees[index].trim().equals(args[0].substring(1).trim())) {
+                        foundIndex = index;
+                        break;
+                    }
                 }
-                if (employees.contains(args[0].substring(1).trim())) {
+                if (foundIndex != -1) {
                     System.out.println("Employee found!");
                 } else {
                     System.out.println("Employee not found!");
@@ -52,27 +64,20 @@ public class EmployeeManager {
             } catch (Exception exception) {
             }
             System.out.println(Constants.MSG_LOADED);
-        } else if (args[0].contains(Constants.ARG_COUNT)) {
+        } else if (args[0].equals(Constants.ARG_COUNT)) {
             System.out.println(Constants.MSG_LOADING);
             try {
-                char[] characters = readEmployeesFromFile().toCharArray();
-                boolean inWord = false;
-                int wordCount = 0;
-                for (char character : characters) {
-                    if (character == ' ') {
-                        if (!inWord) {
-                            wordCount++;
-                            inWord = true;
-                        } else {
-                            inWord = false;
-                        }
-                    }
-                }
-                System.out.println(wordCount + " word(s) found " + characters.length);
+                String line = readEmployeesFromFile();
+                String[] words = line.trim().split("\\s+");
+                System.out.println(words.length + " word(s) found " + line.length());
             } catch (Exception exception) {
             }
             System.out.println(Constants.MSG_LOADED);
-        } else if (args[0].contains(Constants.ARG_UPDATE)) {
+        } else if (args[0].startsWith(Constants.ARG_UPDATE)) {
+            if (args[0].substring(1).trim().isEmpty()) {
+                System.out.println("Error: Please provide an employee name to update (e.g., \"uJohn Doe\").");
+                return;
+            }
             System.out.println(Constants.MSG_LOADING);
             try {
                 String[] employees = readEmployeesFromFile().split(Constants.COMMA_DELIMITER);
@@ -85,15 +90,21 @@ public class EmployeeManager {
             } catch (Exception exception) {
             }
             System.out.println(Constants.MSG_UPDATED);
-        } else if (args[0].contains(Constants.ARG_DELETE)) {
+        } else if (args[0].startsWith(Constants.ARG_DELETE)) {
+            if (args[0].substring(1).trim().isEmpty()) {
+                System.out.println("Error: Please provide an employee name to delete (e.g., \"dJohn Doe\").");
+                return;
+            }
             System.out.println(Constants.MSG_LOADING);
             try {
                 List<String> employeeList = new ArrayList<>(Arrays.asList(readEmployeesFromFile().split(Constants.COMMA_DELIMITER)));
-                employeeList.removeIf(employee -> employee.trim().equals(args[0].substring(1).trim()));
+                employeeList.remove(args[0].substring(1).trim());
                 writeEmployeesToFile(String.join(Constants.COMMA_DELIMITER, employeeList), false);
             } catch (Exception exception) {
             }
             System.out.println(Constants.MSG_DELETED);
+        } else {
+            System.out.println("Error: Invalid argument '" + args[0] + "'. Valid options are: l, s, +Name, ?Name, c, uName, dName.");
         }
     }
 
